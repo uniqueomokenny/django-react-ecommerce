@@ -24,7 +24,6 @@ class CustomLayout extends React.Component {
   render() {
     const { authenticated, cart, loading } = this.props;
 
-    console.log('cart', cart)
     return (
       <div>
         <Menu inverted>
@@ -36,7 +35,7 @@ class CustomLayout extends React.Component {
               <Menu.Item header>Products</Menu.Item>
             </Link>
             
-            <Menu.Menu inverted position='right'>
+            <Menu.Menu position='right'>
               {authenticated ? (
                 <>
                   <Dropdown 

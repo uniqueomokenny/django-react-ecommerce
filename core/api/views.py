@@ -8,12 +8,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from core import models
-from .serializers import ProductSerializer, OrderSerializer
+from .serializers import ItemSerializer, OrderSerializer
 
 
 class ProductListView(ListAPIView):
     permission_classes = (AllowAny, )
-    serializer_class = ProductSerializer
+    serializer_class = ItemSerializer
     queryset = models.Item.objects.all()
 
 
