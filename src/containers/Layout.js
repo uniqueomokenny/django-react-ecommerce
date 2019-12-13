@@ -32,11 +32,40 @@ class CustomLayout extends React.Component {
             <Link to="/">
               <Menu.Item header>Home</Menu.Item>
             </Link>
-            {authenticated ? (
-              <Menu.Item header onClick={() => this.props.logout()}>
-                Logout
-              </Menu.Item>
-            ) : (
+            <Link to="/products">
+              <Menu.Item header>Products</Menu.Item>
+            </Link>
+            
+            <Menu.Menu inverted position='right'>
+              {authenticated ? (
+                <>
+                  <Dropdown 
+                    icon='cart'
+                    loading={loading}
+                    text={`${cart !== null ? cart.order_items.length: 0}`} 
+                    pointing 
+                    className='link item'
+                  >
+                    <Dropdown.Menu>
+                      {cart && cart.order_items.map(order_item => {
+                        return <Dropdown.Item key={order_item.id}>{order_item.quantity} x {order_item.item}</Dropdown.Item>
+                      })}
+                      {cart && cart.order_items.length < 1 ? (
+                        <Dropdown.Item>You have no items in your cart</Dropdown.Item>
+                      ): null}
+                      <Dropdown.Item 
+                        icon='arrow right' 
+                        text='Checkout' 
+                        onClick={() => this.props.history.push('/order-summary')}
+                      />
+                    </Dropdown.Menu>
+                  </Dropdown>
+
+                  <Menu.Item header onClick={() => this.props.logout()}>
+                    Logout
+                  </Menu.Item>
+                </>
+              ) : (
                 <React.Fragment>
                   <Link to="/login">
                     <Menu.Item header>Login</Menu.Item>
@@ -45,31 +74,8 @@ class CustomLayout extends React.Component {
                     <Menu.Item header>Signup</Menu.Item>
                   </Link>
                 </React.Fragment>
-              )}
-            <Link to="/products">
-              <Menu.Item header>Products</Menu.Item>
-            </Link>
-            
-              <Menu.Menu inverted position='right'>
-                <Dropdown 
-                  icon='cart'
-                  loading={loading}
-                  text={`${cart !== null ? cart.order_items.length: 0}`} 
-                  pointing 
-                  className='link item'
-                >
-                  <Dropdown.Menu>
-                    {cart && cart.order_items.map(order_item => {
-                      return <Dropdown.Item key={order_item.id}>{order_item.quantity} x {order_item.item}</Dropdown.Item>
-                    })}
-                    {cart && cart.order_items.length < 1 ? (
-                      <Dropdown.Item>You have no items in your cart</Dropdown.Item>
-                    ): null}
-                    <Dropdown.Header>Header Item</Dropdown.Header>
-                    <Dropdown.Item icon='arrow right' text='Checkout' />
-                  </Dropdown.Menu>
-                </Dropdown>
-              </Menu.Menu>
+                )}
+            </Menu.Menu>
           </Container>
         </Menu>
 
