@@ -13,7 +13,8 @@ import {
     Message
 } from 'semantic-ui-react'
 
-import { productListURL } from '../store/constants';
+import { productListURL, addToCartURL } from '../constants';
+import { authAxios } from '../utils';
 
 
 class ProductList extends React.Component {
@@ -31,14 +32,26 @@ class ProductList extends React.Component {
                 this.setState({ data: res.data, loading: false });
             })
             .catch(error => {
-                this.setState({ error })
+                this.setState({ error, loading: false })
+            })
+    }
+
+    handleAddToCart = slug => {
+        this.setState({ loading: true });
+
+        authAxios.post(addToCartURL, { slug })
+            .then(res => {
+                console.log("Added to cart", res.data)
+                // update cart count
+                this.setState({ loading: false });
+            })
+            .catch(error => {
+                this.setState({ error: error.response.data, loading: false });
             })
     }
 
     render() {
         const { loading, error, data } = this.state;
-
-        console.log(data)
 
         return (
             <Container>
@@ -71,7 +84,7 @@ class ProductList extends React.Component {
                             </Item.Meta>
                             <Item.Description>{product.description}</Item.Description>
                             <Item.Extra>
-                                <Button primary floated='right' icon labelPosition='right'>
+                                <Button onClick={() => this.handleAddToCart(product.slug)} primary floated='right' icon labelPosition='right'>
                                     Add to cart
                                     <Icon name='cart plus' />
                                 </Button>
