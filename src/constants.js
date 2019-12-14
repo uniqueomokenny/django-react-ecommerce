@@ -8,3 +8,4 @@ export const endpoint = `${localhost}${apiUrl}`;
 export const productListURL = `${endpoint}/product-list/`
 export const addToCartURL = `${endpoint}/add-to-cart/`
 export const orderSumaryURL = `${endpoint}/order-summary/`
+export const checkoutURL = `${endpoint}/checkout/`
