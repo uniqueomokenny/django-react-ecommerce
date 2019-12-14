@@ -1,15 +1,41 @@
 import React, {Component} from 'react';
 import {CardElement, injectStripe, Elements, StripeProvider} from 'react-stripe-elements';
-import { Container, Button, Message } from 'semantic-ui-react';
+import { Container, Button, Message, Header, Divider, Form } from 'semantic-ui-react';
 import { authAxios } from '../utils';
-import { checkoutURL } from '../constants';
+import { checkoutURL, orderSumaryURL } from '../constants';
+import OrderCheckoutPreview from './OrderCheckoutPreview';
+import AddCoupon from './AddCoupon';
+
+
 
 class CheckoutForm extends Component {
   state = {
+    data: null,
     loading: false,
     success: false,
     error: null
   }
+
+  componentDidMount() {
+    this.handleFetchOrder();
+  }
+
+  handleFetchOrder = () => {
+    this.setState({ loading: true });
+    authAxios
+      .get(orderSumaryURL)
+      .then(res => {
+        this.setState({ data: res.data, loading: false });
+      })
+      .catch(error => {
+        if(error.response.status === 404) {
+          this.setState({ error: "You currently do not have an order", loading: false});
+        } else {
+          this.setState({ error, loading: false });
+        }
+      });
+  }
+
 
   submit = (e) => {
     e.preventDefault();
@@ -35,7 +61,7 @@ class CheckoutForm extends Component {
   }
 
   render() {
-    const { error, loading, success } = this.state;
+    const { data, error, loading, success } = this.state;
 
     return (
       <div className="checkout">
@@ -56,8 +82,15 @@ class CheckoutForm extends Component {
             </p>
           </Message>
         )}
+        <OrderCheckoutPreview data={data} />
         
-        <p>Would you like to complete the purchase?</p>
+        <Divider />
+
+        <AddCoupon handleFetchOrder={() => this.handleFetchOrder()} />
+
+        <Divider />
+
+        <Header>Would you like to complete the purchase?</Header>
         <CardElement />
         <Button primary loading={loading} disabled={loading} onClick={this.submit} style={{ marginTop: '1rem'}}>Submit</Button>
       </div>   

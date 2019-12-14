@@ -52,9 +52,16 @@ class OrderItemSerializer(serializers.ModelSerializer):
     def get_final_price(self, obj):
         return obj.get_final_price()
 
+class CouponSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Coupon
+        fields = ['id', 'code', 'amount']
+
 
 class OrderSerializer(serializers.ModelSerializer):
     order_items = serializers.SerializerMethodField()
+    coupon = serializers.SerializerMethodField()
     total = serializers.SerializerMethodField()
 
     class Meta:
@@ -62,6 +69,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'order_items',
+            'coupon',
             'total'
         ]
 
@@ -70,3 +78,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def get_total(self, obj):
         return obj.get_total()
+
+    def get_coupon(self, obj):
+        if obj.coupon is not None:
+            return CouponSerializer(obj.coupon).data
+
+        return None

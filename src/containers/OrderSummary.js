@@ -74,11 +74,11 @@ class OrderSummary extends Component {
                 <Table.Row key={order_item.id}>
                   <Table.Cell>{i}</Table.Cell>
                   <Table.Cell>{order_item.item}</Table.Cell>
-                  <Table.Cell>${order_item.item_obj.price}</Table.Cell>
+                  <Table.Cell>${order_item.item_obj.price.toFixed(2)}</Table.Cell>
                   <Table.Cell>{order_item.quantity}</Table.Cell>
                   <Table.Cell>
               {order_item.item_obj.discount_price && <Label color='green' ribbon>@${order_item.item_obj.discount_price}</Label>}
-                    {order_item.final_price}
+                    {order_item.final_price.toFixed(2)}
                   </Table.Cell>
 
                   
@@ -90,7 +90,7 @@ class OrderSummary extends Component {
                   <Table.Cell />
                   <Table.Cell />
                   <Table.Cell colSpan='2'>
-                    Total: ${data.total}
+                    Total: ${data.total.toFixed(2)}
                   </Table.Cell>
                 </Table.Row>
             </Table.Body>

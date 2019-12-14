@@ -178,4 +178,26 @@ class PaymentView(APIView):
 
 
         return Response({'message': "Invalid data received"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+def get_coupon(request, code):
+    try:
+        coupon = Coupon.objects.get(code=code)
+        return coupon
+    except ObjectDoesNotExist:
+        messages.info(request, "This coupon does not exist")
+        return redirect("core:checkout")
+
+
+class AddCouponView(APIView):
+    def post(self, request, *args, **kwargs):
+        code = request.data.get('code', None)
+        if code is None:
+            return Response({'message': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
         
+        order = models.Order.objects.get(user=request.user, ordered=False)
+        coupon = get_object_or_404(models.Coupon, code=code)
+        order.coupon = coupon
+        order.save()
+        return Response({'message': 'Successfully added a coupon.'}, status=status.HTTP_200_OK)
+    
