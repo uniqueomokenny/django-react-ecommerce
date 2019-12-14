@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -72,7 +73,8 @@ class OrderDetailView(RetrieveAPIView):
             order = models.Order.objects.get(user=self.request.user, ordered=False)
             return order
         except ObjectDoesNotExist:
-            return Response({"messages","You do not have an active order"}, status=status.HTTP_400_BAD_REQUEST)
+            raise Http404("You do not have an active order")
+            # return Response({"messages","You do not have an active order"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PaymentView(APIView):

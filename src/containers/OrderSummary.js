@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Label, Table, Container, Header, Button } from 'semantic-ui-react'
+import { Label, Table, Container, Header, Button, Message, Segment, Dimmer, Loader, Image } from 'semantic-ui-react'
 import { authAxios } from '../utils';
 import { orderSumaryURL } from '../constants';
 
@@ -24,7 +24,11 @@ class OrderSummary extends Component {
         this.setState({ data: res.data, loading: false });
       })
       .catch(error => {
-        this.setState({ error, loading: false });
+        if(error.response.status === 404) {
+          this.setState({ error: "You currently do not have an order", loading: false});
+        } else {
+          this.setState({ error, loading: false });
+        }
       });
   }
 
@@ -34,6 +38,25 @@ class OrderSummary extends Component {
     return (
       <Container>
         <Header as="h3">Order Summary</Header>
+        {error && (
+          <Message negative>
+            <Message.Header>No Items found in the cart.</Message.Header>
+            <p>
+              {JSON.stringify(error)}
+            </p>
+          </Message>
+        )}
+
+        {loading && (
+            <Segment>
+                <Dimmer active inverted>
+                    <Loader inverted content='Loading' />
+                </Dimmer>
+
+                <Image src='/images/wireframe/short-paragraph.png' />
+            </Segment>
+        )}
+
         {data && (
           <Table celled>
             <Table.Header>
