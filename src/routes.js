@@ -9,6 +9,7 @@ import ProductList from "./containers/ProductList";
 import OrderSummary from "./containers/OrderSummary";
 import CheckoutForm from "./containers/Checkout";
 import ProductDetail from "./containers/ProductDetail";
+import Profile from "./containers/Profile";
 
 const BaseRouter = () => (
   <Hoc>
@@ -18,6 +19,7 @@ const BaseRouter = () => (
     <Route path="/signup" component={Signup} />
     <Route path="/order-summary" component={OrderSummary} />
     <Route path="/checkout" component={CheckoutForm} />
+    <Route path="/profile" component={Profile} />
     <Route exact path="/" component={HomepageLayout} />
   </Hoc>
 );
