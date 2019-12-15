@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {CardElement, injectStripe, Elements, StripeProvider} from 'react-stripe-elements';
-import { Container, Button, Message, Header, Divider, Form } from 'semantic-ui-react';
+import { Container, Button, Message, Header, Divider } from 'semantic-ui-react';
 import { authAxios } from '../utils';
 import { checkoutURL, orderSumaryURL } from '../constants';
 import OrderCheckoutPreview from './OrderCheckoutPreview';

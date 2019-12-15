@@ -37,30 +37,53 @@ class ItemDetailView(RetrieveAPIView):
 class AddtoCartView(APIView):
     def post(self, request, *args, **kwargs):
         slug = request.data.get('slug', None)
+        variations = request.data.get('variations', [])
         if slug is None:
             return Response({"message": 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
         
         item = get_object_or_404(models.Item, slug=slug)
-        order_item, created = models.OrderItem.objects.get_or_create(
+
+        minimum_variations = models.Variation.objects.filter(item=item).count()
+
+        if len(variations) < minimum_variations:
+            return Response({"message": 'Please special the required variations'}, status=status.HTTP_400_BAD_REQUEST)
+
+        
+
+        order_item_qs = models.OrderItem.objects.filter(
             item=item,
             user=request.user,
             ordered=False
         )
+
+        for v in variations:
+            order_item_qs = order_item_qs.filter(
+                item_variations__exact=v
+            )
+
+        if order_item_qs.exists():
+            order_item = order_item_qs.first()
+            order_item.quantity += 1
+            order_item.save()
+        else:
+            order_item = models.OrderItem.objects.create(
+                item=item,
+                user=request.user,
+                ordered=False
+            )
+            order_item.item_variations.add(*variations)
+            order_item.save()
+
         order_qs = models.Order.objects.filter(user=request.user, ordered=False)
         if order_qs.exists():
             order = order_qs[0]
             # check if the order item is in the order
-            if order.items.filter(item__slug=item.slug).exists():
-                order_item.quantity += 1
-                order_item.save()
-                # messages.info(request, "This item quantity was updated.")
-                # return redirect("core:order-summary")
-                return Response(status.HTTP_200_OK)
-            else:
+            if not order.items.filter(item__id=order_item.id).exists():
                 order.items.add(order_item)
                 # messages.info(request, "This item was added to your cart.")
                 # return redirect("core:order-summary")
-                return Response(status.HTTP_200_OK)
+            return Response(status.HTTP_200_OK)
+
         else:
             ordered_date = timezone.now()
             order = models.Order.objects.create(user=request.user, ordered_date=ordered_date)

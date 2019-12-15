@@ -5,6 +5,7 @@ import axios from 'axios';
 import {
     Button,
     Card,
+    Select,
     Icon,
     Image,
     Item,
@@ -15,7 +16,9 @@ import {
     Segment,
     Message,
     Grid,
-    Header
+    Header,
+    Form,
+    Divider
 } from 'semantic-ui-react'
 
 import { productDetailURL, addToCartURL } from '../constants';
@@ -26,12 +29,18 @@ import { fetchCart } from '../store/actions/cart';
 class ProductDetail extends React.Component {
     state = {
         loading: false,
+        formVisble: false,
         error: null,
-        data: []
+        data: [],
+        formData: {},
     }
 
     componentDidMount() {
         this.handleFetchItem()
+    }
+
+    handleToggleForm = () => {
+        this.setState({ formVisble: !this.state.formVisble })
     }
 
     handleFetchItem() {
@@ -48,10 +57,28 @@ class ProductDetail extends React.Component {
             })
     }
 
+    handleChange = (e, {name, value}) => {
+        const { formData } = this.state;
+        const updatedFormData = {
+            ...formData,
+            [name]: value
+        }
+        
+        this.setState({ formData: updatedFormData });
+    }
+
+    handleFormatData = formData => {
+        return Object.keys(formData).map(key => {
+            return formData[key];
+        })
+    }
+
     handleAddToCart = slug => {
         this.setState({ loading: true });
+        const { formData } = this.state;
+        const variations = this.handleFormatData(formData);
 
-        authAxios.post(addToCartURL, { slug })
+        authAxios.post(addToCartURL, { slug, variations })
             .then(res => {
                 console.log("Added to cart", res.data)
                 // update cart count
@@ -64,11 +91,10 @@ class ProductDetail extends React.Component {
     }
 
     render() {
-        const { loading, error, data } = this.state;
+        const { loading, error, data, formVisble, formData } = this.state;
 
         const product = data;
 
-        console.log(product)
         return (
             <Container>
                 {error && (
@@ -110,7 +136,7 @@ class ProductDetail extends React.Component {
                                 description={product.description}
                                 extra={(
                                     <>
-                                        <Button onClick={() => this.handleAddToCart(product.slug)} color='yellow' fluid icon labelPosition='right'>
+                                        <Button onClick={this.handleToggleForm} color='yellow' fluid icon labelPosition='right'>
                                             Add to cart
                                             <Icon name='cart plus' />
                                         </Button>
@@ -118,13 +144,47 @@ class ProductDetail extends React.Component {
                                     </>
                                 )}
                             />
+
+                            {formVisble && (
+                                <>
+                                    <Divider />
+                                    <Form>
+                                        <Form.Field>
+                                            {data.variations.map(v => {
+                                                const name = v.name.toLowerCase();
+                                                return (
+                                                    <Select
+                                                        key={v.id}
+                                                        name={name}
+                                                        onChange={this.handleChange}
+                                                        options={v.item_variations.map(item => {
+                                                            return {
+                                                                key: item.id,
+                                                                text: item.value,
+                                                                value: item.id
+                                                            }
+                                                        })}
+                                                        placeholder={`Choose an ${name}`}
+                                                        selection
+                                                        value={formData[name]}
+                                                    />
+                                                )
+                                            })}
+                                            
+                                        </Form.Field>
+                                        <Form.Button primary onClick={() => this.handleAddToCart(product.slug)}> 
+                                            Submit
+                                        </Form.Button>
+                                    </Form>
+                                </>
+                            )}
                         </Grid.Column>
 
                         <Grid.Column>
                         <Header as='h2'>Try different variations.</Header>
                         {product.variations && (
                             product.variations.map(variation => (
-                                <>  
+                                <React.Fragment key={variation.id}>  
                                     <Header as='h3'>{variation.name}</Header>
                                     <Item.Group divided key={variation.id}>
                                         {variation.item_variations.map(iv => (
@@ -136,7 +196,7 @@ class ProductDetail extends React.Component {
                                             </Item>
                                         ))}
                                     </Item.Group>
-                                </>
+                                </React.Fragment>
                             ))
                         )}
                         </Grid.Column>

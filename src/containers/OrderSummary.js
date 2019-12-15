@@ -32,6 +32,15 @@ class OrderSummary extends Component {
       });
   }
 
+  renderVariations = orderItem => {
+    let text = '';
+    orderItem.item_variations.forEach(iv => {
+      text += `${iv.variation.name}: ${iv.value}, `
+    });
+
+    return text;
+  }
+
   render() {
     const { data, loading, error } = this.state;
 
@@ -72,12 +81,12 @@ class OrderSummary extends Component {
             <Table.Body>
               {data.order_items.map((order_item, i) => (
                 <Table.Row key={order_item.id}>
-                  <Table.Cell>{i}</Table.Cell>
-                  <Table.Cell>{order_item.item}</Table.Cell>
-                  <Table.Cell>${order_item.item_obj.price.toFixed(2)}</Table.Cell>
+                  <Table.Cell>{i + 1}</Table.Cell>
+                  <Table.Cell>{order_item.item.title} - {this.renderVariations(order_item)}</Table.Cell>
+                  <Table.Cell>${order_item.item.price.toFixed(2)}</Table.Cell>
                   <Table.Cell>{order_item.quantity}</Table.Cell>
                   <Table.Cell>
-              {order_item.item_obj.discount_price && <Label color='green' ribbon>@${order_item.item_obj.discount_price}</Label>}
+                    {order_item.item.discount_price && <Label color='green' ribbon>@${order_item.item.discount_price}</Label>}
                     {order_item.final_price.toFixed(2)}
                   </Table.Cell>
 

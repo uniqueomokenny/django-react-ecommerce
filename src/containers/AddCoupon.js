@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { Form, Button, Message } from 'semantic-ui-react';
-import { addCouponURL, orderSumaryURL } from '../constants';
+import { addCouponURL } from '../constants';
 import { authAxios } from '../utils';
 
 
@@ -36,7 +36,7 @@ class AddCoupon extends Component {
   }
 
   render() {
-    const { code, error, loading, success } = this.state;
+    const { code, error, success } = this.state;
 
     return (
       <>

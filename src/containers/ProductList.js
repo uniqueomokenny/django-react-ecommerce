@@ -2,8 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import {
-    Button,
-    Icon,
     Image,
     Item,
     Label,
@@ -87,10 +85,10 @@ class ProductList extends React.Component {
                             </Item.Meta>
                             <Item.Description>{product.description}</Item.Description>
                             <Item.Extra>
-                                <Button onClick={() => this.handleAddToCart(product.slug)} primary floated='right' icon labelPosition='right'>
+                                {/* <Button onClick={() => this.handleAddToCart(product.slug)} primary floated='right' icon labelPosition='right'>
                                     Add to cart
                                     <Icon name='cart plus' />
-                                </Button>
+                                </Button> */}
                                 {product.discount_price && (
                                     <Label 
                                         color={product.label === 'primary'? 'blue': product.label === 'secondary'? 'red': 'olive'}>

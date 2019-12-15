@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { Container, Header, Item, Message, Segment, Dimmer, Loader, Image, Label } from 'semantic-ui-react'
-import { authAxios } from '../utils';
-import { orderSumaryURL } from '../constants';
+import { Container, Header, Item, Label } from 'semantic-ui-react'
 
 
 class OrderCheckoutPreview extends Component {
