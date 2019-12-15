@@ -5,7 +5,8 @@ const apiUrl = '/api';
 export const endpoint = `${localhost}${apiUrl}`;
 
 
-export const productListURL = `${endpoint}/product-list/`
+export const productListURL = `${endpoint}/products/`
+export const productDetailURL = id => `${endpoint}/products/${id}/`;
 export const addToCartURL = `${endpoint}/add-to-cart/`
 export const orderSumaryURL = `${endpoint}/order-summary/`
 export const checkoutURL = `${endpoint}/checkout/`

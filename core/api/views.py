@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from core import models
-from .serializers import ItemSerializer, OrderSerializer
+from .serializers import ItemSerializer, OrderSerializer, ItemDetailSerializer
 
 import stripe
 import random
@@ -22,9 +22,15 @@ def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
 
 
-class ProductListView(ListAPIView):
+class ItemListView(ListAPIView):
     permission_classes = (AllowAny, )
     serializer_class = ItemSerializer
+    queryset = models.Item.objects.all()
+
+
+class ItemDetailView(RetrieveAPIView):
+    permission_classes = (AllowAny, )
+    serializer_class = ItemDetailSerializer
     queryset = models.Item.objects.all()
 
 

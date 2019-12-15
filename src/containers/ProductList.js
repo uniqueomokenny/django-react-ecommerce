@@ -78,10 +78,10 @@ class ProductList extends React.Component {
             <Item.Group divided>
                 {data.map(product => (
                     <Item key={product.id}>
-                        <Item.Image src={product.image} />
+                        <Item.Image src={product.image} style={{cursor: 'pointer'}} onClick={() => this.props.history.push(`/products/${product.id}`)} />
 
                         <Item.Content>
-                            <Item.Header as='a'>{product.title}</Item.Header>
+                            <Item.Header as='a' onClick={() => this.props.history.push(`/products/${product.id}`)}>{product.title}</Item.Header>
                             <Item.Meta>
                                 <span className='cinema'>{product.category}</span>
                             </Item.Meta>
