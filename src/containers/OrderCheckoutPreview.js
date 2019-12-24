@@ -15,7 +15,6 @@ class OrderCheckoutPreview extends Component {
 
   render() {
     const { data } = this.props;
-    console.log('data', data)
 
     return (
       <Container>

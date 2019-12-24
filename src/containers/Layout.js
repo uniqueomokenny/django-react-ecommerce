@@ -54,14 +54,16 @@ class CustomLayout extends React.Component {
                       {cart && cart.order_items.map(order_item => {
                         return <Dropdown.Item key={order_item.id}>{order_item.quantity} x {order_item.item.title}</Dropdown.Item>
                       })}
-                      {cart && cart.order_items.length < 1 ? (
+                      
+                      {cart !== null && cart.order_items.length ? 
+                        <Dropdown.Item 
+                          icon='arrow right' 
+                          text='Checkout' 
+                          onClick={() => this.props.history.push('/order-summary')}
+                        />
+                        :
                         <Dropdown.Item>You have no items in your cart</Dropdown.Item>
-                      ): null}
-                      <Dropdown.Item 
-                        icon='arrow right' 
-                        text='Checkout' 
-                        onClick={() => this.props.history.push('/order-summary')}
-                      />
+                      }
                     </Dropdown.Menu>
                   </Dropdown>
 
