@@ -46,15 +46,13 @@ class AddtoCartView(APIView):
         variations = request.data.get('variations', [])
         if slug is None:
             return Response({"message": 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         item = get_object_or_404(models.Item, slug=slug)
 
         minimum_variations = models.Variation.objects.filter(item=item).count()
 
         if len(variations) < minimum_variations:
             return Response({"message": 'Please special the required variations'}, status=status.HTTP_400_BAD_REQUEST)
-
-        
 
         order_item_qs = models.OrderItem.objects.filter(
             item=item,
@@ -80,7 +78,8 @@ class AddtoCartView(APIView):
             order_item.item_variations.add(*variations)
             order_item.save()
 
-        order_qs = models.Order.objects.filter(user=request.user, ordered=False)
+        order_qs = models.Order.objects.filter(
+            user=request.user, ordered=False)
         if order_qs.exists():
             order = order_qs[0]
             # check if the order item is in the order
@@ -92,7 +91,8 @@ class AddtoCartView(APIView):
 
         else:
             ordered_date = timezone.now()
-            order = models.Order.objects.create(user=request.user, ordered_date=ordered_date)
+            order = models.Order.objects.create(
+                user=request.user, ordered_date=ordered_date)
             order.items.add(order_item)
             # messages.info(request, "This item was added to your cart.")
             # return redirect("core:order-summary")
@@ -105,11 +105,49 @@ class OrderDetailView(RetrieveAPIView):
 
     def get_object(self):
         try:
-            order = models.Order.objects.get(user=self.request.user, ordered=False)
+            order = models.Order.objects.get(
+                user=self.request.user, ordered=False)
             return order
         except ObjectDoesNotExist:
             raise Http404("You do not have an active order")
             # return Response({"messages","You do not have an active order"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderItemDeleteView(DestroyAPIView):
+    permission_classes = (IsAuthenticated, )
+    queryset = models.OrderItem.objects.all()
+
+
+class OrderQuantityUpdateView(APIView):
+    def post(self, request, *args, **kwargs):
+        slug = request.data.get('slug', None)
+        if slug is None:
+            return Response({"message", "Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
+        item = get_object_or_404(models.Item, slug=slug)
+        order_qs = models.Order.objects.filter(
+            user=request.user,
+            ordered=False
+        )
+        if order_qs.exists():
+            order = order_qs[0]
+            if order.items.filter(item__slug=item.slug).exists():
+                order_item = models.OrderItem.objects.filter(
+                    item=item,
+                    user=request.user,
+                    ordered=False
+                )[0]
+                if order_item.quantity > 1:
+                    order_item.quantity -= 1
+                    order_item.save()
+                else:
+                    order.items.remove(order_item)
+                return Response(status=status.HTTP_200_OK)
+
+            else:
+                return Response({"message", "This item was not in your cart"}, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            return Response({"message", "You do not have an active order"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PaymentView(APIView):
@@ -120,11 +158,13 @@ class PaymentView(APIView):
         token = request.data.get('stripeToken')
         # save = form.cleaned_data.get('save')
         # use_default = form.cleaned_data.get('use_default')
-        billing_address_id= request.data.get('selectedBillingAddress')
+        billing_address_id = request.data.get('selectedBillingAddress')
         shipping_address_id = request.data.get('selectedShippingAddress')
 
-        billing_address = models.Address.objects.get(address_type='B', id=billing_address_id)
-        shipping_address = models.Address.objects.get(address_type='S', id=shipping_address_id)
+        billing_address = models.Address.objects.get(
+            address_type='B', id=billing_address_id)
+        shipping_address = models.Address.objects.get(
+            address_type='S', id=shipping_address_id)
 
         if userprofile.stripe_customer_id != '' and userprofile.stripe_customer_id is not None:
             customer = stripe.Customer.retrieve(
@@ -211,7 +251,6 @@ class PaymentView(APIView):
             # send an email to ourselves
             return Response({'message': "A serious error occurred. We have been notifed."}, status=status.HTTP_400_BAD_REQUEST)
 
-
         return Response({'message': "Invalid data received"}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -229,13 +268,13 @@ class AddCouponView(APIView):
         code = request.data.get('code', None)
         if code is None:
             return Response({'message': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         order = models.Order.objects.get(user=request.user, ordered=False)
         coupon = get_object_or_404(models.Coupon, code=code)
         order.coupon = coupon
         order.save()
         return Response({'message': 'Successfully added a coupon.'}, status=status.HTTP_200_OK)
-    
+
 
 class CountryListView(APIView):
 
@@ -243,11 +282,10 @@ class CountryListView(APIView):
         return Response(countries, status=status.HTTP_200_OK)
 
 
-
 class AddressListView(ListAPIView):
     permission_classes = (IsAuthenticated, )
     serializer_class = AddressSerializer
-    
+
     def get_queryset(self):
         address_type = self.request.query_params.get('address_type', None)
         qs = models.Address.objects.filter(user=self.request.user)

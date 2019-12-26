@@ -15,4 +15,6 @@ urlpatterns = [
     path('order-summary/', views.OrderDetailView.as_view(), name='order-summary'),
     path('checkout/', views.PaymentView.as_view(), name='checkout'),
     path('add-coupon/', views.AddCouponView.as_view(), name='add-coupon'),
+    path('order-items/<pk>/delete/', views.OrderItemDeleteView.as_view(), name='remove-order-item'),
+    path('order-items/update-quantity/', views.OrderQuantityUpdateView.as_view(), name='update-order-item-quantity'),
 ]
