@@ -19,3 +19,4 @@ export const addressUpdateURL = id => `${endpoint}/addresses/${id}/update/`;
 export const addressDeleteURL = id => `${endpoint}/addresses/${id}/delete/`;
 export const getCountriesListURL = `${endpoint}/countries/`;
 export const getUserIdURL = `${endpoint}/user-id/`;
+export const paymentListURL = `${endpoint}/payments/`;

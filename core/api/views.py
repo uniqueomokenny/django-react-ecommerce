@@ -10,7 +10,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from core import models
-from .serializers import ItemSerializer, OrderSerializer, ItemDetailSerializer, AddressSerializer
+from .serializers import (
+    ItemSerializer, 
+    OrderSerializer, 
+    ItemDetailSerializer, 
+    AddressSerializer,
+    PaymentSerializer
+)
 
 import stripe
 import random
@@ -309,3 +315,11 @@ class AddressUpdateView(UpdateAPIView):
 class AddressDeleteView(DestroyAPIView):
     permission_classes = (IsAuthenticated, )
     queryset = models.Address.objects.all()
+
+
+class PayListView(ListAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = PaymentSerializer
+    
+    def get_queryset(self):
+        return models.Payment.objects.filter(user=self.request.user)

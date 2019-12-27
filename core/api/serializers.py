@@ -188,3 +188,13 @@ class AddressSerializer(serializers.ModelSerializer):
             'address_type',
             'default',
         )
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Payment
+        fields = (
+            'id',
+            'amount',
+            'timestamp',
+        )
